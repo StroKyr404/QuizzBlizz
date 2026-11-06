@@ -350,6 +350,7 @@ function showQuestion(msg) {
             card.style.opacity = '1';
             card.style.filter = 'none';
             card.style.transform = 'none';
+            card.style.boxShadow = '';
             statEl.classList.add('hidden');
 
             if (msg.options && msg.options[i]) {
@@ -421,6 +422,7 @@ function showQuestionReveal(msg) {
             } else {
                 card.style.opacity = '0.35';
                 card.style.filter = 'grayscale(60%)';
+                card.style.boxShadow = '';
             }
         }
     }
