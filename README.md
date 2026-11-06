@@ -98,4 +98,4 @@ Wenn Kolleginnen das Spiel nutzen möchten, ohne überhaupt etwas herunterzulade
 
 ## 📄 Lizenz
 
-Dieses Projekt ist unter der [MIT-Lizenz](LICENSE) veröffentlicht – frei nutzbar, anpassbar und teilbar für Schulen und Lehrpersonen.
+Dieses Projekt ist unter der [Apache License 2.0](LICENSE) lizenziert – frei nutzbar, anpassbar und teilbar für Schulen, Lehrpersonen und Entwickler.
