@@ -1,18 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}Klassenhut - Das Schul-Quiz{% endblock %}
+{% block title %}QuizBlizz - Das interaktive Schul-Quiz{% endblock %}
 
 {% block content %}
 <div class="min-h-full flex flex-col justify-between p-6 bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900">
     <!-- Header -->
     <header class="flex items-center justify-between max-w-5xl mx-auto w-full pt-4">
         <div class="flex items-center space-x-3">
-            <div class="w-12 h-12 bg-white text-purple-900 rounded-2xl flex items-center justify-center font-black text-2xl shadow-xl transform -rotate-3">
-                K!
+            <div class="w-12 h-12 bg-amber-400 text-slate-950 rounded-2xl flex items-center justify-center font-black text-2xl shadow-xl transform -rotate-3">
+                ⚡
             </div>
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-white">KLASSENHUT</h1>
-                <p class="text-xs text-purple-300 font-semibold tracking-wide">DAS INTERAKTIVE SCHUL-QUIZ</p>
+                <h1 class="text-3xl font-black tracking-tight text-white flex items-center space-x-1.5">
+                    <span>QUIZ</span><span class="text-amber-400">BLIZZ</span>
+                </h1>
+                <p class="text-xs text-purple-300 font-semibold tracking-wide">DAS BLITZSCHNELLE SCHUL-QUIZ</p>
             </div>
         </div>
 
@@ -89,7 +91,7 @@
     <!-- Footer Network Info Banner -->
     <footer class="max-w-4xl mx-auto w-full pt-6 border-t border-purple-800/40 text-center text-xs text-purple-300 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-            Klassenhut Open Source Quiz &bull; Entwickelt für iPads & Schulen
+            QuizBlizz &bull; Blitzschnell lernen mit iPads & Beamer
         </div>
         <div id="join-link-box" class="bg-black/30 px-4 py-1.5 rounded-lg font-mono text-purple-200">
             Schüler-Link: <span id="current-join-url" class="font-bold text-amber-300">{{ join_url }}/play</span>

@@ -1,9 +1,9 @@
 #!/bin/bash
-# Klassenhut Schnellstart für macOS
+# QuizBlizz Schnellstart für macOS
 
 cd "$(dirname "$0")"
 
-echo "🎓 Starte Klassenhut Schul-Quiz..."
+echo "⚡ Starte QuizBlizz Schul-Quiz..."
 
 # Falls .venv fehlt, automatisch anlegen
 if [ ! -d ".venv" ]; then

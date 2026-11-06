@@ -1,4 +1,4 @@
-# 🎓 Klassenhut - Das interaktive Schul-Quiz
+# ⚡ QuizBlizz - Das blitzschnelle Schul-Quiz
 
 Ein selbstgehosteter, eleganter **Kahoot-Nachbau**, optimiert für den Einsatz im Klassenzimmer mit **Beamer** und **Schüler-iPads**.
 

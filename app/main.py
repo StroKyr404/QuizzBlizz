@@ -17,7 +17,7 @@ from .storage import (
 from .game_manager import game_manager
 from .tunnel import tunnel_manager
 
-app = FastAPI(title="Klassenhut - Das Schul-Quiz")
+app = FastAPI(title="QuizBlizz - Das interaktive Schul-Quiz")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
