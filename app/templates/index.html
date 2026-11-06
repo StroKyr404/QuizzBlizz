@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Klassenhut - Das Schul-Quiz{% endblock %}
+
+{% block content %}
+<div class="min-h-full flex flex-col justify-between p-6 bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900">
+    <!-- Header -->
+    <header class="flex items-center justify-between max-w-5xl mx-auto w-full pt-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-white text-purple-900 rounded-2xl flex items-center justify-center font-black text-2xl shadow-xl transform -rotate-3">
+                K!
+            </div>
+            <div>
+                <h1 class="text-3xl font-black tracking-tight text-white">KLASSENHUT</h1>
+                <p class="text-xs text-purple-300 font-semibold tracking-wide">DAS INTERAKTIVE SCHUL-QUIZ</p>
+            </div>
+        </div>
+
+        <div id="tunnel-badge" class="px-4 py-2 bg-purple-800/60 backdrop-blur-md rounded-full border border-purple-500/30 text-xs font-bold flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="network-status-text">Server online</span>
+        </div>
+    </header>
+
+    <!-- Main Hero -->
+    <main class="max-w-4xl mx-auto w-full my-auto py-12">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl sm:text-6xl font-black text-white mb-4 tracking-tight">
+                Gemeinsam lernen mit Spannung.
+            </h2>
+            <p class="text-lg text-purple-200 max-w-xl mx-auto font-medium">
+                Starte ein Live-Quiz am Beamer. Deine Schüler scannen einfach mit ihren iPads den QR-Code und spielen mit.
+            </p>
+        </div>
+
+        <!-- Three Action Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <!-- Host / Beamer Card -->
+            <a href="/host" class="group relative bg-white/10 hover:bg-white/15 backdrop-blur-xl border-2 border-purple-400/30 hover:border-purple-300 rounded-3xl p-8 transition-all duration-200 transform hover:-translate-y-1 shadow-2xl flex flex-col justify-between">
+                <div>
+                    <div class="w-16 h-16 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-3xl mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                        🖥️
+                    </div>
+                    <span class="text-xs font-black tracking-wider uppercase text-amber-300 bg-amber-400/20 px-3 py-1 rounded-full">
+                        Für die Lehrperson
+                    </span>
+                    <h3 class="text-2xl font-black text-white mt-3 mb-2">Spiel am Beamer starten</h3>
+                    <p class="text-purple-200 text-sm">
+                        Eröffne eine Spiel-Lobby mit PIN und QR-Code, zeige die Fragen auf der Leinwand und küre die Gewinner auf dem Siegerpodest.
+                    </p>
+                </div>
+                <div class="mt-8 flex items-center font-bold text-amber-300 group-hover:translate-x-2 transition-transform">
+                    <span>Jetzt Spiel starten</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </div>
+            </a>
+
+            <!-- Student Join Card -->
+            <a href="/play" class="group relative bg-white/10 hover:bg-white/15 backdrop-blur-xl border-2 border-emerald-400/30 hover:border-emerald-300 rounded-3xl p-8 transition-all duration-200 transform hover:-translate-y-1 shadow-2xl flex flex-col justify-between">
+                <div>
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-3xl mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                        📱
+                    </div>
+                    <span class="text-xs font-black tracking-wider uppercase text-emerald-300 bg-emerald-400/20 px-3 py-1 rounded-full">
+                        Für Schüler / iPad
+                    </span>
+                    <h3 class="text-2xl font-black text-white mt-3 mb-2">Als Schüler beitreten</h3>
+                    <p class="text-purple-200 text-sm">
+                        PIN eingeben, Nickname wählen und mit den 4 bunten Tasten blitzschnell antworten.
+                    </p>
+                </div>
+                <div class="mt-8 flex items-center font-bold text-emerald-300 group-hover:translate-x-2 transition-transform">
+                    <span>Zum Spiel-Buzzer</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </div>
+            </a>
+        </div>
+
+        <!-- Secondary Editor Row -->
+        <div class="mt-8 text-center">
+            <a href="/editor" class="inline-flex items-center space-x-2 text-purple-200 hover:text-white bg-white/5 hover:bg-white/10 px-6 py-3 rounded-2xl border border-white/10 font-bold transition-all text-sm">
+                <span>✏️</span>
+                <span>Quiz-Editor & Excel-Fragenkataloge verwalten</span>
+                <span class="text-purple-400">&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer Network Info Banner -->
+    <footer class="max-w-4xl mx-auto w-full pt-6 border-t border-purple-800/40 text-center text-xs text-purple-300 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+            Klassenhut Open Source Quiz &bull; Entwickelt für iPads & Schulen
+        </div>
+        <div id="join-link-box" class="bg-black/30 px-4 py-1.5 rounded-lg font-mono text-purple-200">
+            Schüler-Link: <span id="current-join-url" class="font-bold text-amber-300">{{ join_url }}/play</span>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Fetch live network info (tunnel / IP)
+    fetch('/api/network/info')
+        .then(res => res.json())
+        .then(data => {
+            const urlEl = document.getElementById('current-join-url');
+            if (urlEl && data.join_url) {
+                urlEl.innerText = data.join_url;
+            }
+            const statusEl = document.getElementById('network-status-text');
+            if (statusEl) {
+                if (data.is_public_tunnel) {
+                    statusEl.innerText = 'Cloudflare-Tunnel aktiv 🌐';
+                } else {
+                    statusEl.innerText = `WLAN: ${data.local_ip}`;
+                }
+            }
+        })
+        .catch(err => console.log('Network check error', err));
+</script>
+{% endblock %}

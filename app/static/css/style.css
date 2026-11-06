@@ -1,0 +1,129 @@
+/* Klassenhut Stylesheet */
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+    50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(255,255,255,0.4); }
+}
+
+@keyframes riseUp {
+    0% { transform: translateY(100%); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-bounce-in {
+    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+.animate-rise-up {
+    animation: riseUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Touch pad optimization for iPad */
+.touch-pad {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition: transform 0.08s ease, filter 0.08s ease;
+}
+
+.touch-pad:active {
+    transform: scale(0.96);
+    filter: brightness(0.85);
+}
+
+/* Kahoot 4 Colors */
+.btn-kahoot-red {
+    background-color: #e21b3c;
+    box-shadow: 0 6px 0 #9c0019;
+}
+.btn-kahoot-red:active {
+    box-shadow: 0 2px 0 #9c0019;
+    transform: translateY(4px);
+}
+
+.btn-kahoot-blue {
+    background-color: #1368ce;
+    box-shadow: 0 6px 0 #093c78;
+}
+.btn-kahoot-blue:active {
+    box-shadow: 0 2px 0 #093c78;
+    transform: translateY(4px);
+}
+
+.btn-kahoot-yellow {
+    background-color: #d89e00;
+    box-shadow: 0 6px 0 #8b6500;
+}
+.btn-kahoot-yellow:active {
+    box-shadow: 0 2px 0 #8b6500;
+    transform: translateY(4px);
+}
+
+.btn-kahoot-green {
+    background-color: #26890c;
+    box-shadow: 0 6px 0 #154c06;
+}
+.btn-kahoot-green:active {
+    box-shadow: 0 2px 0 #154c06;
+    transform: translateY(4px);
+}
+
+/* Kahoot Geometric Icons */
+.shape-triangle {
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 30px solid white;
+    display: inline-block;
+}
+
+.shape-diamond {
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    transform: rotate(45deg);
+    display: inline-block;
+}
+
+.shape-circle {
+    width: 26px;
+    height: 26px;
+    background-color: white;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.shape-square {
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    display: inline-block;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}

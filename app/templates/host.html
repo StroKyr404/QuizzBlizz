@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block title %}Klassenhut - Beamer Host{% endblock %}
+
+{% block head %}
+<style>
+    /* Fullscreen view overrides */
+    :fullscreen { background: #1e1035; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="host-app" class="relative flex-1 flex flex-col h-full bg-gradient-to-b from-[#2b0955] via-[#1a0635] to-[#110224] overflow-hidden">
+    
+    <!-- Top Bar (Always Visible) -->
+    <header class="h-16 px-6 flex items-center justify-between border-b border-white/10 bg-black/20 backdrop-blur-md z-20">
+        <div class="flex items-center space-x-4">
+            <a href="/" class="flex items-center space-x-2 text-white hover:text-purple-300 font-black text-xl transition-colors">
+                <span class="w-8 h-8 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-black text-sm">K!</span>
+                <span class="hidden sm:inline">KLASSENHUT</span>
+            </a>
+            <span id="quiz-title-badge" class="hidden md:inline px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-purple-200">
+                Lade Quiz...
+            </span>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <button id="btn-sound" onclick="toggleSound()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all text-sm font-bold flex items-center space-x-1" title="Ton an/aus">
+                <span id="sound-icon">🔊</span>
+            </button>
+            <button onclick="toggleFullscreen()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all text-sm font-bold flex items-center space-x-1" title="Vollbild für Beamer">
+                <span>⛶</span>
+                <span class="hidden sm:inline text-xs">Vollbild</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- STEP 0: Quiz Chooser (if room not yet created) -->
+    <div id="view-select-quiz" class="flex-1 flex flex-col items-center justify-center p-6 z-10">
+        <div class="max-w-xl w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl text-center">
+            <h2 class="text-3xl font-black text-white mb-2">Quiz für den Beamer auswählen</h2>
+            <p class="text-purple-200 text-sm mb-6">Wähle eines deiner Quizze, um die Spiel-Lobby zu eröffnen:</p>
+
+            <div class="space-y-3 mb-8 text-left max-h-64 overflow-y-auto pr-1">
+                {% for q in quizzes %}
+                <label class="flex items-center justify-between p-4 bg-white/5 hover:bg-white/15 border border-white/10 rounded-2xl cursor-pointer transition-all">
+                    <div class="flex items-center space-x-3">
+                        <input type="radio" name="selected_quiz" value="{{ q.id }}" {% if loop.first %}checked{% endif %} class="w-5 h-5 text-purple-600 focus:ring-purple-500">
+                        <div>
+                            <div class="font-black text-white text-base">{{ q.title }}</div>
+                            <div class="text-xs text-purple-300">{{ q.question_count }} Fragen &bull; {{ q.description }}</div>
+                        </div>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+
+            <button onclick="createRoomFromSelected()" class="w-full py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-lg rounded-2xl shadow-xl transform active:scale-95 transition-all">
+                Lobby eröffnen 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 1: Lobby Screen -->
+    <div id="view-lobby" class="hidden flex-1 flex flex-col justify-between p-6 z-10">
+        <!-- Top Info: PIN & QR -->
+        <div class="max-w-6xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl gap-8">
+            <div class="flex-1 text-center lg:text-left">
+                <div class="text-sm font-bold uppercase tracking-widest text-amber-300 mb-2">
+                    📱 Mit dem iPad beitreten:
+                </div>
+                <div class="text-xl sm:text-2xl font-bold text-white mb-4">
+                    QR-Code scannen oder Website öffnen:
+                    <div class="font-mono text-purple-300 text-base sm:text-lg mt-1 font-semibold underline" id="lobby-join-url-text">...</div>
+                </div>
+
+                <div class="inline-flex items-center space-x-4 bg-black/40 px-6 py-4 rounded-2xl border border-white/15">
+                    <span class="text-xs font-bold uppercase text-purple-300 tracking-wider">Spiel-PIN:</span>
+                    <span id="lobby-pin-display" class="font-black text-4xl sm:text-6xl text-white tracking-widest font-mono select-all">------</span>
+                </div>
+            </div>
+
+            <!-- Big High-Res QR Code for Projector -->
+            <div class="flex flex-col items-center bg-white p-4 rounded-3xl shadow-2xl">
+                <img id="lobby-qr-img" src="" alt="QR-Code zum Beitreten" class="w-48 h-48 sm:w-56 sm:h-56 rounded-xl object-contain">
+                <span class="text-slate-800 text-xs font-black uppercase mt-2 tracking-wider">Mit iPad Kamera scannen</span>
+            </div>
+        </div>
+
+        <!-- Center: Joined Players -->
+        <div class="max-w-6xl mx-auto w-full my-6 flex-1 flex flex-col">
+            <div class="flex items-center justify-between mb-4 px-2">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">👥</span>
+                    <h3 class="text-2xl font-black text-white">
+                        <span id="player-count">0</span> Schüler bereit
+                    </h3>
+                </div>
+                <div class="text-xs text-purple-300">Tipp: Klicke auf einen Namen, um ihn zu entfernen</div>
+            </div>
+
+            <div id="player-tags-container" class="flex-1 bg-black/20 rounded-3xl p-6 border border-white/10 flex flex-wrap content-start gap-3 overflow-y-auto min-h-[160px]">
+                <div id="lobby-waiting-hint" class="w-full text-center py-12 text-purple-300 font-semibold text-lg animate-pulse">
+                    Warte auf Schüler... Scannt den QR-Code!
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom: Start Button -->
+        <div class="max-w-md mx-auto w-full text-center">
+            <button id="btn-start-game" onclick="startGame()" class="w-full py-5 bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-slate-950 font-black text-2xl rounded-3xl shadow-2xl transform active:scale-95 transition-all">
+                Spiel jetzt starten ▶
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 2: Get Ready (Countdown) -->
+    <div id="view-get-ready" class="hidden flex-1 flex flex-col items-center justify-center p-6 z-10 text-center">
+        <div class="text-sm font-black uppercase tracking-widest text-amber-300 mb-4 bg-amber-400/20 px-4 py-1.5 rounded-full inline-block">
+            Frage <span id="gr-q-num">1</span> von <span id="gr-q-total">10</span>
+        </div>
+        <h2 id="gr-question-title" class="text-3xl sm:text-5xl font-black text-white max-w-4xl mb-12 leading-tight">
+            ...
+        </h2>
+        
+        <div class="relative w-36 h-36 flex items-center justify-center rounded-full bg-white/10 border-4 border-amber-400 shadow-2xl animate-pulse">
+            <span id="gr-counter" class="text-7xl font-black text-amber-300">3</span>
+        </div>
+        <div class="mt-8 text-xl font-bold text-purple-200">Mach dich bereit!</div>
+    </div>
+
+    <!-- STEP 3: Question Display (Active) -->
+    <div id="view-question" class="hidden flex-1 flex flex-col justify-between p-6 z-10">
+        <!-- Question Bar -->
+        <div class="max-w-6xl mx-auto w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 text-center shadow-2xl">
+            <div class="text-xs font-black uppercase tracking-widest text-amber-300 mb-2">
+                Frage <span id="q-cur-num">1</span> / <span id="q-total-num">10</span>
+            </div>
+            <h2 id="q-text" class="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+                ...
+            </h2>
+        </div>
+
+        <!-- Timer Circle & Answers Counter in Center -->
+        <div class="max-w-6xl mx-auto w-full flex items-center justify-between px-4 my-4">
+            <!-- Timer -->
+            <div class="flex items-center space-x-4">
+                <div class="w-20 h-20 rounded-full bg-purple-700/80 border-4 border-white/80 flex items-center justify-center shadow-xl">
+                    <span id="q-timer-num" class="text-3xl font-black text-white">20</span>
+                </div>
+                <div class="text-xs uppercase font-bold text-purple-300">Sekunden</div>
+            </div>
+
+            <!-- Skip Button -->
+            <button onclick="skipQuestion()" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm border border-white/15 transition-all">
+                Überspringen ⏭
+            </button>
+
+            <!-- Answers count -->
+            <div class="flex items-center space-x-3 bg-black/40 px-5 py-3 rounded-2xl border border-white/15">
+                <span class="text-2xl">⚡</span>
+                <div>
+                    <div class="text-xl font-black text-amber-300">
+                        <span id="q-answers-given">0</span> / <span id="q-total-players">0</span>
+                    </div>
+                    <div class="text-[10px] uppercase font-bold text-purple-300">Antworten eingegangen</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 Answer Cards -->
+        <div class="max-w-6xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 gap-4 pb-2">
+            <!-- Red -->
+            <div id="card-ans-0" class="btn-kahoot-red rounded-3xl p-6 flex items-center space-x-4 text-white shadow-xl transition-all">
+                <div class="w-12 h-12 flex items-center justify-center"><div class="shape-triangle"></div></div>
+                <div id="ans-text-0" class="text-xl sm:text-2xl font-black flex-1">...</div>
+                <div id="ans-stat-0" class="hidden text-2xl font-black bg-black/30 px-3 py-1 rounded-xl">0</div>
+            </div>
+            <!-- Blue -->
+            <div id="card-ans-1" class="btn-kahoot-blue rounded-3xl p-6 flex items-center space-x-4 text-white shadow-xl transition-all">
+                <div class="w-12 h-12 flex items-center justify-center"><div class="shape-diamond"></div></div>
+                <div id="ans-text-1" class="text-xl sm:text-2xl font-black flex-1">...</div>
+                <div id="ans-stat-1" class="hidden text-2xl font-black bg-black/30 px-3 py-1 rounded-xl">0</div>
+            </div>
+            <!-- Yellow -->
+            <div id="card-ans-2" class="btn-kahoot-yellow rounded-3xl p-6 flex items-center space-x-4 text-white shadow-xl transition-all">
+                <div class="w-12 h-12 flex items-center justify-center"><div class="shape-circle"></div></div>
+                <div id="ans-text-2" class="text-xl sm:text-2xl font-black flex-1">...</div>
+                <div id="ans-stat-2" class="hidden text-2xl font-black bg-black/30 px-3 py-1 rounded-xl">0</div>
+            </div>
+            <!-- Green -->
+            <div id="card-ans-3" class="btn-kahoot-green rounded-3xl p-6 flex items-center space-x-4 text-white shadow-xl transition-all">
+                <div class="w-12 h-12 flex items-center justify-center"><div class="shape-square"></div></div>
+                <div id="ans-text-3" class="text-xl sm:text-2xl font-black flex-1">...</div>
+                <div id="ans-stat-3" class="hidden text-2xl font-black bg-black/30 px-3 py-1 rounded-xl">0</div>
+            </div>
+        </div>
+
+        <!-- Next button (hidden until reveal) -->
+        <div id="reveal-control-bar" class="hidden max-w-md mx-auto w-full mt-4 text-center">
+            <button onclick="hostNextStep()" class="w-full py-4 bg-white text-purple-950 hover:bg-purple-100 font-black text-xl rounded-2xl shadow-2xl transform active:scale-95 transition-all">
+                Weiter zur Rangliste ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 4: Leaderboard Screen -->
+    <div id="view-leaderboard" class="hidden flex-1 flex flex-col justify-between p-6 z-10">
+        <div class="max-w-4xl mx-auto w-full text-center">
+            <div class="text-xs font-black uppercase tracking-widest text-amber-300 mb-2">Zwischenstand</div>
+            <h2 class="text-4xl sm:text-5xl font-black text-white">Rangliste</h2>
+        </div>
+
+        <div class="max-w-3xl mx-auto w-full my-6 flex-1 flex flex-col justify-center space-y-3">
+            <div id="leaderboard-list" class="space-y-3">
+                <!-- Injected via host.js -->
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto w-full text-center">
+            <button id="btn-lb-next" onclick="hostNextStep()" class="w-full py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xl rounded-2xl shadow-2xl transform active:scale-95 transition-all">
+                Nächste Frage ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 5: Podium Screen (Winner Celebration) -->
+    <div id="view-podium" class="hidden flex-1 flex flex-col justify-between p-6 z-10 text-center">
+        <div class="max-w-4xl mx-auto w-full pt-4">
+            <h2 class="text-4xl sm:text-6xl font-black text-amber-300 mb-2 tracking-tight">🏆 SIEGEREHRUNG 🏆</h2>
+            <p class="text-purple-200 font-bold">Großartige Leistung von allen!</p>
+        </div>
+
+        <!-- Podium Columns (2nd - 1st - 3rd) -->
+        <div class="max-w-4xl mx-auto w-full flex items-end justify-center space-x-4 sm:space-x-8 my-auto h-96">
+            <!-- 2nd Place (Silver) -->
+            <div id="podium-col-2" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-12 transition-all duration-700">
+                <div class="text-3xl mb-2">🥈</div>
+                <div id="podium-name-2" class="text-lg sm:text-2xl font-black text-white truncate max-w-full px-2 mb-1">...</div>
+                <div id="podium-score-2" class="text-xs sm:text-sm font-bold text-slate-300 mb-3">0 Punkte</div>
+                <div class="w-full h-44 bg-gradient-to-t from-slate-600 to-slate-400 rounded-t-3xl flex items-center justify-center shadow-2xl border-t-4 border-slate-300">
+                    <span class="text-5xl font-black text-slate-900/40">2</span>
+                </div>
+            </div>
+
+            <!-- 1st Place (Gold) -->
+            <div id="podium-col-1" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-12 transition-all duration-700 delay-300">
+                <div class="text-5xl mb-2 animate-bounce">👑</div>
+                <div id="podium-name-1" class="text-xl sm:text-3xl font-black text-amber-300 truncate max-w-full px-2 mb-1">...</div>
+                <div id="podium-score-1" class="text-sm sm:text-base font-bold text-amber-200 mb-3">0 Punkte</div>
+                <div class="w-full h-64 bg-gradient-to-t from-amber-600 via-amber-400 to-yellow-300 rounded-t-3xl flex items-center justify-center shadow-2xl border-t-4 border-yellow-200">
+                    <span class="text-7xl font-black text-amber-950/40">1</span>
+                </div>
+            </div>
+
+            <!-- 3rd Place (Bronze) -->
+            <div id="podium-col-3" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-12 transition-all duration-700">
+                <div class="text-3xl mb-2">🥉</div>
+                <div id="podium-name-3" class="text-lg sm:text-2xl font-black text-white truncate max-w-full px-2 mb-1">...</div>
+                <div id="podium-score-3" class="text-xs sm:text-sm font-bold text-amber-400 mb-3">0 Punkte</div>
+                <div class="w-full h-32 bg-gradient-to-t from-amber-800 to-amber-700 rounded-t-3xl flex items-center justify-center shadow-2xl border-t-4 border-amber-600">
+                    <span class="text-4xl font-black text-amber-950/40">3</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Podium Actions -->
+        <div class="max-w-md mx-auto w-full pb-4 flex space-x-4">
+            <a href="/host" class="flex-1 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl transition-all">
+                Neues Spiel
+            </a>
+            <a href="/" class="flex-1 py-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl transition-all">
+                Zur Startseite
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/host.js"></script>
+{% endblock %}
