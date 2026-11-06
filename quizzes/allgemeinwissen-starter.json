@@ -1,73 +1,75 @@
 {
-  "id": "allgemeinwissen-starter",
-  "title": "🎉 Schul-Quiz: Allgemeinwissen & Fun Facts",
-  "description": "Ein spannendes Kennenlern-Quiz mit 5 Fragen für den Beamer-Einsatz.",
   "created_at": "2026-11-06",
+  "description": "Ein spannendes Kennenlern-Quiz mit 5 Fragen für den Beamer-Einsatz.",
+  "id": "allgemeinwissen-starter",
+  "password": "",
+  "password_enabled": false,
   "questions": [
     {
+      "correct_index": 1,
       "id": 1,
-      "question": "Welcher Planet ist der Sonne am nächsten?",
-      "time_limit": 20,
-      "points": 1000,
       "options": [
         "Venus",
         "Merkur",
         "Mars",
         "Jupiter"
       ],
-      "correct_index": 1
+      "points": 1000,
+      "question": "Welcher Planet ist der Sonne am nächsten?",
+      "time_limit": 20
     },
     {
+      "correct_index": 2,
       "id": 2,
-      "question": "Wie viele Zähne hat ein erwachsener Mensch normalerweise (inkl. Weisheitszähne)?",
-      "time_limit": 20,
-      "points": 1000,
       "options": [
         "28",
         "30",
         "32",
         "36"
       ],
-      "correct_index": 2
+      "points": 1000,
+      "question": "Wie viele Zähne hat ein erwachsener Mensch normalerweise (inkl. Weisheitszähne)?",
+      "time_limit": 20
     },
     {
+      "correct_index": 0,
       "id": 3,
-      "question": "Welches Tier kann bekanntlich nicht rückwärts gehen?",
-      "time_limit": 20,
-      "points": 1000,
       "options": [
         "Känguru",
         "Elefant",
         "Pinguin",
         "Frosch"
       ],
-      "correct_index": 0
+      "points": 1000,
+      "question": "Welches Tier kann bekanntlich nicht rückwärts gehen?",
+      "time_limit": 20
     },
     {
+      "correct_index": 2,
       "id": 4,
-      "question": "Was ist die chemische Formel für gewöhnliches Kochsalz?",
-      "time_limit": 15,
-      "points": 1000,
       "options": [
         "H2O",
         "CO2",
         "NaCl",
         "CH4"
       ],
-      "correct_index": 2
+      "points": 1000,
+      "question": "Was ist die chemische Formel für gewöhnliches Kochsalz?",
+      "time_limit": 15
     },
     {
+      "correct_index": 3,
       "id": 5,
-      "question": "In welcher Stadt steht der berühmte schiefe Turm?",
-      "time_limit": 15,
-      "points": 1000,
       "options": [
         "Rom",
         "Florenz",
         "Venedig",
         "Pisa"
       ],
-      "correct_index": 3
+      "points": 1000,
+      "question": "In welcher Stadt steht der berühmte schiefe Turm?",
+      "time_limit": 15
     }
-  ]
+  ],
+  "title": "🎉 Schul-Quiz: Allgemeinwissen & Fun Facts"
 }

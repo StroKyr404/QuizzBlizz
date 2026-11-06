@@ -6,7 +6,7 @@ cd "$APP_DIR"
 
 # Prüfe, ob QuizBlizz bereits läuft
 if curl -s http://127.0.0.1:8000/ >/dev/null 2>&1; then
-    open "http://localhost:8000/host"
+    open "http://localhost:8000"
     exit 0
 fi
 

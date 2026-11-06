@@ -70,17 +70,21 @@
         </div>
     </div>
 
-    <!-- PHASE 1: Lobby Wait -->
+    <!-- PHASE 1: Lobby Wait (Wartebereich) -->
     <div id="phase-lobby" class="hidden flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-b from-purple-900 to-indigo-950 text-center">
-        <div class="w-24 h-24 rounded-full bg-white/10 border-4 border-amber-400 flex items-center justify-center text-4xl mb-6 shadow-2xl animate-pulse">
-            👋
+        <div class="w-24 h-24 rounded-full bg-emerald-500/20 border-4 border-emerald-400 flex items-center justify-center text-4xl mb-6 shadow-2xl animate-pulse">
+            ✓
         </div>
-        <h2 class="text-3xl font-black text-white mb-2">Du bist dabei!</h2>
-        <p class="text-purple-200 text-base max-w-xs mb-8">
-            Siehst du deinen Namen am Beamer? Das Spiel startet gleich...
+        <h2 class="text-3xl font-black text-white mb-1">Erfolgreich eingeloggt!</h2>
+        <div class="text-xl font-bold text-amber-300 mb-4" id="lobby-student-greeting">
+            Du bist dabei!
+        </div>
+        <p class="text-purple-200 text-sm max-w-xs mb-8">
+            Siehst du deinen Namen am Beamer? Dein iPad ist startklar. Das Spiel beginnt gleich...
         </p>
-        <div class="px-6 py-3 bg-black/30 rounded-2xl border border-white/10 text-xs text-purple-300 font-bold">
-            Warte auf den Start der Lehrperson
+        <div class="inline-flex items-center space-x-2 px-6 py-3 bg-black/40 rounded-2xl border border-white/15 text-xs text-purple-200 font-bold shadow-lg">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>Warte auf Start der Lehrperson...</span>
         </div>
     </div>
 

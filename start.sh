@@ -18,7 +18,7 @@ fi
     until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/ | grep -q "200"; do
         sleep 0.3
     done
-    open "http://localhost:8000/host"
+    open "http://localhost:8000"
 ) &
 
 # Server starten

@@ -26,6 +26,15 @@ function showView(viewId) {
             }
         }
     });
+
+    const topStartBtn = document.getElementById('btn-top-start');
+    if (topStartBtn) {
+        if (viewId === 'view-lobby') {
+            topStartBtn.classList.remove('hidden');
+        } else {
+            topStartBtn.classList.add('hidden');
+        }
+    }
 }
 
 function toggleSound() {

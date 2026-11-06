@@ -10,10 +10,10 @@
 {% endblock %}
 
 {% block content %}
-<div id="host-app" class="relative flex-1 flex flex-col h-full bg-gradient-to-b from-[#2b0955] via-[#1a0635] to-[#110224] overflow-hidden">
+<div id="host-app" class="relative flex-1 flex flex-col h-full bg-gradient-to-b from-[#2b0955] via-[#1a0635] to-[#110224] overflow-y-auto">
     
     <!-- Top Bar (Always Visible) -->
-    <header class="h-16 px-6 flex items-center justify-between border-b border-white/10 bg-black/20 backdrop-blur-md z-20">
+    <header class="h-16 px-6 flex items-center justify-between border-b border-white/10 bg-black/20 backdrop-blur-md z-20 shrink-0 sticky top-0">
         <div class="flex items-center space-x-4">
             <a href="/" class="flex items-center space-x-2 text-white hover:text-purple-300 font-black text-xl transition-colors">
                 <span class="w-8 h-8 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-black text-sm">⚡</span>
@@ -25,6 +25,10 @@
         </div>
 
         <div class="flex items-center space-x-3">
+            <button id="btn-top-start" onclick="startGame()" class="hidden px-4 py-2 bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all flex items-center space-x-1.5 active:scale-95">
+                <span>▶</span>
+                <span>Spiel starten</span>
+            </button>
             <button id="btn-sound" onclick="toggleSound()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all text-sm font-bold flex items-center space-x-1" title="Ton an/aus">
                 <span id="sound-icon">🔊</span>
             </button>
@@ -62,9 +66,9 @@
     </div>
 
     <!-- STEP 1: Lobby Screen -->
-    <div id="view-lobby" class="hidden flex-1 flex flex-col justify-between p-6 z-10">
+    <div id="view-lobby" class="hidden flex-1 flex flex-col justify-between p-4 sm:p-6 z-10 overflow-y-auto min-h-0">
         <!-- Top Info: PIN & QR -->
-        <div class="max-w-6xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl gap-8">
+        <div class="max-w-6xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl gap-8 shrink-0">
             <div class="flex-1 text-center lg:text-left space-y-4">
                 <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2">
                     <span class="text-xs font-black uppercase tracking-widest text-amber-300 bg-amber-400/20 px-3 py-1 rounded-full">
@@ -130,7 +134,7 @@
         </div>
 
         <!-- Bottom: Start Button -->
-        <div class="max-w-md mx-auto w-full text-center">
+        <div class="max-w-md mx-auto w-full text-center py-6 pb-12 shrink-0">
             <button id="btn-start-game" onclick="startGame()" class="w-full py-5 bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-slate-950 font-black text-2xl rounded-3xl shadow-2xl transform active:scale-95 transition-all">
                 Spiel jetzt starten ▶
             </button>

@@ -5,6 +5,28 @@ let myName = null;
 let myPlayerId = null;
 let hasAnsweredCurrentQuestion = false;
 
+function setPhase(phaseId) {
+    const phases = [
+        'phase-join',
+        'phase-lobby',
+        'phase-get-ready',
+        'phase-question',
+        'phase-submitted',
+        'phase-feedback',
+        'phase-podium'
+    ];
+    phases.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (id === phaseId) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const pinInput = document.getElementById('input-pin');
     if (pinInput) {
@@ -114,6 +136,8 @@ function handlePlayerMessage(msg) {
             myPlayerId = msg.player_id;
             document.getElementById('player-header').classList.remove('hidden');
             document.getElementById('player-nickname-badge').innerText = msg.name;
+            const greetEl = document.getElementById('lobby-student-greeting');
+            if (greetEl) greetEl.innerText = `Hallo ${msg.name}! 🎉`;
             setPhase('phase-lobby');
             break;
 
