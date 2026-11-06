@@ -40,8 +40,22 @@ class TunnelManager:
             which = subprocess.run(["which", "cloudflared"], capture_output=True, text=True)
             if which.returncode == 0 and which.stdout.strip():
                 cloudflared_path = which.stdout.strip()
-            else:
-                print("ℹ️ cloudflared nicht gefunden. Nutze lokale IP:", self.get_join_url())
+            elif hasattr(os, "uname") and os.uname().sysname == "Darwin":
+                # Auto-download portable cloudflared on macOS
+                arch = "arm64" if os.uname().machine == "arm64" else "amd64"
+                try:
+                    print(f"📥 Lade Cloudflare-Tunnel für macOS ({arch}) herunter...")
+                    subprocess.run(
+                        f"curl -sL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-darwin-{arch}.tgz | tar -xz -C '{base_dir}'",
+                        shell=True, timeout=20
+                    )
+                    if os.path.exists(cloudflared_path):
+                        os.chmod(cloudflared_path, 0o755)
+                except Exception as dl_err:
+                    print(f"Auto-Download fehlgeschlagen ({dl_err}). Nutze lokale IP.")
+            
+            if not os.path.exists(cloudflared_path) or not os.access(cloudflared_path, os.X_OK):
+                print("ℹ️ cloudflared nicht verfügbar. Nutze lokale IP:", self.get_join_url())
                 return None
 
         print("🚀 Starte sicheren Cloudflare-Tunnel für Schul-WLAN...")
