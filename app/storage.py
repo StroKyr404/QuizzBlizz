@@ -79,7 +79,9 @@ def list_quizzes() -> List[Dict[str, Any]]:
                         "title": data.get("title", "Unbenanntes Quiz"),
                         "description": data.get("description", ""),
                         "question_count": len(data.get("questions", [])),
-                        "created_at": data.get("created_at", "")
+                        "created_at": data.get("created_at", ""),
+                        "password_enabled": bool(data.get("password_enabled", False)),
+                        "has_password": bool(data.get("password_enabled", False) and data.get("password"))
                     })
             except Exception as e:
                 print(f"Fehler beim Laden von {filename}: {e}")

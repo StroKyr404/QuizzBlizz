@@ -1,6 +1,8 @@
 // Host Logic for Klassenhut Beamer
 let ws = null;
 let currentPin = null;
+let currentJoinUrl = null;
+let isRoomLocked = false;
 let questionTimerInterval = null;
 let currentRemainingTime = 0;
 
@@ -44,6 +46,76 @@ function toggleFullscreen() {
     }
 }
 
+// Fullscreen QR Modal
+function openQrModal() {
+    const modal = document.getElementById('modal-qr-zoom');
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeQrModal() {
+    const modal = document.getElementById('modal-qr-zoom');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeQrModal();
+    }
+});
+
+// 1-Click Copy URL to Clipboard
+function copyJoinUrl() {
+    if (!currentJoinUrl) return;
+    navigator.clipboard.writeText(currentJoinUrl).then(() => {
+        const btn = document.getElementById('btn-copy-url');
+        const icon = document.getElementById('copy-icon');
+        const label = document.getElementById('copy-label');
+        if (label && icon) {
+            label.innerText = '✓ Link kopiert!';
+            icon.innerText = '✅';
+            btn.classList.add('bg-emerald-600', 'text-white');
+            setTimeout(() => {
+                label.innerText = 'Link kopieren';
+                icon.innerText = '📋';
+                btn.classList.remove('bg-emerald-600', 'text-white');
+            }, 2000);
+        }
+    }).catch(err => {
+        console.error("Copy failed:", err);
+        prompt("Link zum Kopieren:", currentJoinUrl);
+    });
+}
+
+// Toggle Lobby Lock (prevent joining)
+function toggleLobbyLock() {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ action: 'TOGGLE_LOCK' }));
+    }
+}
+
+function updateLockUi(locked) {
+    isRoomLocked = locked;
+    const btn = document.getElementById('btn-lock-lobby');
+    const icon = document.getElementById('lock-icon');
+    const text = document.getElementById('lock-text');
+
+    if (btn && icon && text) {
+        if (locked) {
+            icon.innerText = '🔒';
+            text.innerText = 'Lobby gesperrt (Kein Beitritt)';
+            btn.className = 'px-3 py-1 bg-rose-500/25 hover:bg-rose-500/35 text-rose-300 border border-rose-500/50 rounded-full text-xs font-black flex items-center space-x-1.5 transition-all shadow-md';
+        } else {
+            icon.innerText = '🔓';
+            text.innerText = 'Lobby offen';
+            btn.className = 'px-3 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 rounded-full text-xs font-black flex items-center space-x-1.5 transition-all';
+        }
+    }
+}
+
 // 1. Create Room from Selected Quiz
 async function createRoomFromSelected() {
     const radio = document.querySelector('input[name="selected_quiz"]:checked');
@@ -74,11 +146,25 @@ async function createRoomFromSelected() {
 // 2. Setup Lobby with PIN, QR & WebSocket
 function setupLobby(roomData) {
     currentPin = roomData.pin;
+    currentJoinUrl = roomData.join_url;
     
     document.getElementById('quiz-title-badge').innerText = roomData.quiz_title;
     document.getElementById('lobby-pin-display').innerText = roomData.pin.replace(/(\d{3})(\d{3})/, '$1 $2');
+    document.getElementById('modal-pin-display').innerText = roomData.pin.replace(/(\d{3})(\d{3})/, '$1 $2');
+    
     document.getElementById('lobby-join-url-text').innerText = roomData.join_url;
     document.getElementById('lobby-qr-img').src = roomData.qr_code;
+    document.getElementById('modal-qr-img').src = roomData.qr_code;
+
+    // Show password badge if protected
+    const pwdBadge = document.getElementById('badge-pwd-protected');
+    if (pwdBadge) {
+        if (roomData.password_required) {
+            pwdBadge.classList.remove('hidden');
+        } else {
+            pwdBadge.classList.add('hidden');
+        }
+    }
 
     showView('view-lobby');
     window.sounds.startLobbyMusic();
@@ -114,7 +200,18 @@ function connectHostWebSocket(pin) {
 function handleHostMessage(msg) {
     switch (msg.type) {
         case 'ROOM_STATUS':
+            if (typeof msg.is_locked !== 'undefined') {
+                updateLockUi(msg.is_locked);
+            }
+            if (msg.password_required) {
+                const pwdBadge = document.getElementById('badge-pwd-protected');
+                if (pwdBadge) pwdBadge.classList.remove('hidden');
+            }
             renderPlayers(msg.players || []);
+            break;
+
+        case 'ROOM_LOCK_STATUS':
+            updateLockUi(msg.is_locked);
             break;
 
         case 'PLAYER_JOINED':

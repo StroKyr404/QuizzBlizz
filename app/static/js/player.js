@@ -5,32 +5,56 @@ let myName = null;
 let myPlayerId = null;
 let hasAnsweredCurrentQuestion = false;
 
-function setPhase(phaseId) {
-    const phases = [
-        'phase-join',
-        'phase-lobby',
-        'phase-get-ready',
-        'phase-question',
-        'phase-submitted',
-        'phase-feedback',
-        'phase-podium'
-    ];
-    phases.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            if (id === phaseId) {
-                el.classList.remove('hidden');
+document.addEventListener('DOMContentLoaded', () => {
+    const pinInput = document.getElementById('input-pin');
+    if (pinInput) {
+        if (pinInput.value && pinInput.value.length === 6) {
+            checkPinStatus(pinInput.value.trim());
+        }
+        pinInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (val.length === 6) {
+                checkPinStatus(val);
+            }
+        });
+    }
+});
+
+async function checkPinStatus(pin) {
+    try {
+        const res = await fetch(`/api/room/${pin}/info`);
+        if (res.ok) {
+            const info = await res.json();
+            const pwdWrapper = document.getElementById('field-pwd-wrapper');
+            if (pwdWrapper) {
+                if (info.password_required) {
+                    pwdWrapper.classList.remove('hidden');
+                } else {
+                    pwdWrapper.classList.add('hidden');
+                }
+            }
+            if (info.is_locked) {
+                showError("⚠️ Diese Spiel-Lobby ist derzeit gesperrt.");
             } else {
-                el.classList.add('hidden');
+                hideError();
             }
         }
-    });
+    } catch (err) {
+        // Ignored during typing
+    }
+}
+
+function hideError() {
+    const errBox = document.getElementById('join-error-msg');
+    if (errBox) errBox.classList.add('hidden');
 }
 
 function handleJoinSubmit(e) {
     e.preventDefault();
     const pin = document.getElementById('input-pin').value.trim();
     const name = document.getElementById('input-nickname').value.trim();
+    const passwordInput = document.getElementById('input-password');
+    const password = passwordInput ? passwordInput.value.trim() : '';
 
     if (!pin || pin.length !== 6) {
         showError("Bitte eine gültige 6-stellige PIN eingeben.");
@@ -43,7 +67,7 @@ function handleJoinSubmit(e) {
 
     myPin = pin;
     myName = name;
-    connectPlayerWebSocket(pin, name);
+    connectPlayerWebSocket(pin, name, password);
 }
 
 function showError(msg) {
@@ -54,7 +78,7 @@ function showError(msg) {
     }
 }
 
-function connectPlayerWebSocket(pin, name) {
+function connectPlayerWebSocket(pin, name, password) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/ws/player/${pin}`;
 
@@ -64,7 +88,8 @@ function connectPlayerWebSocket(pin, name) {
         console.log("📱 Player WebSocket geöffnet. Sende JOIN...");
         playerWs.send(JSON.stringify({
             type: 'JOIN',
-            name: name
+            name: name,
+            password: password || ''
         }));
     };
 
@@ -94,6 +119,14 @@ function handlePlayerMessage(msg) {
 
         case 'ERROR':
             showError(msg.message);
+            if (msg.code === 'WRONG_PASSWORD') {
+                const pwdWrapper = document.getElementById('field-pwd-wrapper');
+                if (pwdWrapper) {
+                    pwdWrapper.classList.remove('hidden');
+                    const pwdInp = document.getElementById('input-password');
+                    if (pwdInp) pwdInp.focus();
+                }
+            }
             if (playerWs) playerWs.close();
             break;
 

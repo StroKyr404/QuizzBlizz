@@ -1,0 +1,17 @@
+#!/bin/bash
+# Native macOS App Launcher für QuizBlizz
+
+APP_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+cd "$APP_DIR"
+
+# Prüfe, ob QuizBlizz bereits läuft
+if curl -s http://127.0.0.1:8000/ >/dev/null 2>&1; then
+    open "http://localhost:8000/host"
+    exit 0
+fi
+
+# Native macOS Benachrichtigung
+osascript -e 'display notification "QuizBlizz wird gestartet. Safari öffnet sich gleich..." with title "QuizBlizz Schul-Quiz" sound name "Ping"' 2>/dev/null &
+
+# Führe start.sh aus
+exec "$APP_DIR/start.sh"

@@ -107,7 +107,21 @@ async def create_room(payload: dict):
         "quiz_title": quiz.get("title"),
         "questions_count": len(quiz.get("questions", [])),
         "join_url": join_url,
-        "qr_code": qr_data
+        "qr_code": qr_data,
+        "password_required": room.password_required
+    }
+
+@app.get("/api/room/{pin}/info")
+async def get_room_info(pin: str):
+    room = game_manager.get_room(pin)
+    if not room:
+        raise HTTPException(status_code=404, detail="Raum nicht gefunden")
+    return {
+        "pin": room.pin,
+        "state": room.state,
+        "is_locked": room.is_locked,
+        "password_required": room.password_required,
+        "quiz_title": room.quiz.get("title", "")
     }
 
 @app.get("/api/quizzes")
@@ -169,6 +183,8 @@ async def websocket_host(websocket: WebSocket, pin: str):
             "type": "ROOM_STATUS",
             "pin": pin,
             "state": room.state,
+            "is_locked": room.is_locked,
+            "password_required": room.password_required,
             "players": [p.to_dict() for p in room.players.values()],
             "players_count": len(room.players),
             "quiz_title": room.quiz.get("title", ""),
@@ -179,7 +195,9 @@ async def websocket_host(websocket: WebSocket, pin: str):
             data = await websocket.receive_json()
             action = data.get("action")
 
-            if action == "START_GAME":
+            if action == "TOGGLE_LOCK":
+                await room.toggle_lock()
+            elif action == "START_GAME":
                 await room.start_game()
             elif action == "NEXT_STEP":
                 if room.state == "QUESTION":
@@ -230,9 +248,10 @@ async def websocket_player(websocket: WebSocket, pin: str):
         if not name:
             name = f"Spieler-{random.randint(10, 99)}"
 
-        success = await room.add_player(player_id, name, websocket)
+        password = str(first_msg.get("password", "")).strip()
+        success, code, err_msg = await room.add_player(player_id, name, websocket, password)
         if not success:
-            await websocket.send_json({"type": "ERROR", "message": "Dieser Name ist bereits vergeben!"})
+            await websocket.send_json({"type": "ERROR", "code": code, "message": err_msg})
             await websocket.close()
             return
 

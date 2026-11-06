@@ -20,7 +20,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderQuiz() {
     document.getElementById('quiz-title-input').value = currentQuiz.title || '';
+    
+    // Password protection setup
+    const pwdToggle = document.getElementById('quiz-pwd-toggle');
+    const pwdContainer = document.getElementById('quiz-pwd-container');
+    const pwdInput = document.getElementById('quiz-pwd-input');
+    
+    const isProtected = Boolean(currentQuiz.password_enabled);
+    if (pwdToggle) pwdToggle.checked = isProtected;
+    if (pwdInput) pwdInput.value = currentQuiz.password || '';
+    if (pwdContainer) {
+        if (isProtected) {
+            pwdContainer.classList.remove('hidden');
+        } else {
+            pwdContainer.classList.add('hidden');
+        }
+    }
+
     renderQuestions();
+}
+
+function togglePasswordInput() {
+    const pwdToggle = document.getElementById('quiz-pwd-toggle');
+    const pwdContainer = document.getElementById('quiz-pwd-container');
+    const pwdInput = document.getElementById('quiz-pwd-input');
+    
+    if (pwdToggle.checked) {
+        pwdContainer.classList.remove('hidden');
+        pwdInput.focus();
+    } else {
+        pwdContainer.classList.add('hidden');
+    }
 }
 
 function renderQuestions() {
@@ -183,6 +213,22 @@ async function saveCurrentQuiz() {
         return;
     }
     currentQuiz.title = title;
+
+    // Handle password
+    const pwdToggle = document.getElementById('quiz-pwd-toggle');
+    const pwdInput = document.getElementById('quiz-pwd-input');
+    if (pwdToggle && pwdToggle.checked) {
+        const pwd = (pwdInput ? pwdInput.value.trim() : '');
+        if (!pwd) {
+            alert("Bitte gib ein Passwort für das Quiz ein oder deaktiviere das Häkchen für den Passwortschutz.");
+            return;
+        }
+        currentQuiz.password_enabled = true;
+        currentQuiz.password = pwd;
+    } else {
+        currentQuiz.password_enabled = false;
+        currentQuiz.password = '';
+    }
 
     try {
         const res = await fetch('/api/quizzes', {

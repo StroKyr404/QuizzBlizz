@@ -33,6 +33,17 @@ class GameRoom:
         self.q_start_time = 0.0
         self.timer_task: Optional[asyncio.Task] = None
         self.answers_for_current_q: Dict[int, int] = {0: 0, 1: 0, 2: 0, 3: 0}
+        self.is_locked = False
+        self.password_required = bool(self.quiz.get("password_enabled") and str(self.quiz.get("password", "")).strip())
+        self.password = str(self.quiz.get("password", "")).strip() if self.password_required else ""
+
+    async def toggle_lock(self) -> bool:
+        self.is_locked = not self.is_locked
+        await self.send_to_host({
+            "type": "ROOM_LOCK_STATUS",
+            "is_locked": self.is_locked
+        })
+        return self.is_locked
 
     @property
     def current_question(self) -> Optional[Dict[str, Any]]:
@@ -64,11 +75,19 @@ class GameRoom:
         await self.send_to_host(data)
         await self.broadcast_to_players(data)
 
-    async def add_player(self, player_id: str, name: str, ws: WebSocket) -> bool:
+    async def add_player(self, player_id: str, name: str, ws: WebSocket, provided_password: Optional[str] = None) -> tuple:
+        if self.is_locked:
+            return False, "LOCKED", "Die Lobby wurde von der Lehrperson gesperrt. Kein Beitritt möglich."
+
+        if self.password_required:
+            if not provided_password or provided_password.strip() != self.password:
+                return False, "WRONG_PASSWORD", "Falsches Quiz-Passwort! Bitte frage deine Lehrperson."
+
         # Check duplicate name
         for p in self.players.values():
             if p.name.lower() == name.lower():
-                return False
+                return False, "DUPLICATE_NAME", "Dieser Name ist bereits vergeben!"
+                
         player = Player(player_id, name, ws)
         self.players[player_id] = player
         
@@ -79,7 +98,7 @@ class GameRoom:
             "players_count": len(self.players),
             "players": [p.to_dict() for p in self.players.values()]
         })
-        return True
+        return True, "OK", ""
 
     async def remove_player(self, player_id: str):
         if player_id in self.players:
