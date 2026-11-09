@@ -18,9 +18,9 @@
             </div>
         </div>
 
-        <div id="tunnel-badge" class="px-4 py-2 bg-purple-800/60 backdrop-blur-md rounded-full border border-purple-500/30 text-xs font-bold flex items-center space-x-2">
+        <div id="network-badge" class="px-4 py-2 bg-purple-800/60 backdrop-blur-md rounded-full border border-purple-500/30 text-xs font-bold flex items-center space-x-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="network-status-text">Server online</span>
+            <span id="network-status-text">WLAN-Server online</span>
         </div>
     </header>
 
@@ -102,7 +102,7 @@
 
 {% block scripts %}
 <script>
-    // Fetch live network info (tunnel / IP)
+    // Fetch live network info (Local IP)
     fetch('/api/network/info')
         .then(res => res.json())
         .then(data => {
@@ -111,12 +111,8 @@
                 urlEl.innerText = data.join_url;
             }
             const statusEl = document.getElementById('network-status-text');
-            if (statusEl) {
-                if (data.is_public_tunnel) {
-                    statusEl.innerText = 'Cloudflare-Tunnel aktiv 🌐';
-                } else {
-                    statusEl.innerText = `WLAN: ${data.local_ip}`;
-                }
+            if (statusEl && data.local_ip) {
+                statusEl.innerText = `Schul-WLAN: ${data.local_ip}`;
             }
         })
         .catch(err => console.log('Network check error', err));

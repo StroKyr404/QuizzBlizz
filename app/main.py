@@ -3,6 +3,7 @@ import io
 import base64
 import uuid
 import asyncio
+import random
 from typing import Optional
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, UploadFile, File, Form, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
@@ -15,7 +16,7 @@ from .storage import (
     generate_excel_template, import_from_excel, ensure_quizzes_dir
 )
 from .game_manager import game_manager
-from .tunnel import tunnel_manager
+from .network import network_manager
 
 app = FastAPI(title="QuizBlizz - Das interaktive Schul-Quiz")
 
@@ -43,7 +44,7 @@ def make_qr_code_data_url(text: str) -> str:
 
 @app.get("/", response_class=HTMLResponse)
 async def index_page(request: Request):
-    join_url = tunnel_manager.get_join_url()
+    join_url = network_manager.get_join_url()
     return templates.TemplateResponse("index.html", {
         "request": request,
         "join_url": join_url
@@ -51,7 +52,7 @@ async def index_page(request: Request):
 
 @app.get("/host", response_class=HTMLResponse)
 async def host_page(request: Request, pin: Optional[str] = None):
-    join_url = tunnel_manager.get_join_url()
+    join_url = network_manager.get_join_url()
     quizzes = list_quizzes()
     return templates.TemplateResponse("host.html", {
         "request": request,
@@ -81,12 +82,11 @@ async def editor_page(request: Request, id: Optional[str] = None):
 
 @app.get("/api/network/info")
 async def network_info():
-    base_url = tunnel_manager.get_join_url()
+    base_url = network_manager.get_join_url()
     return {
         "join_url": f"{base_url}/play",
         "base_url": base_url,
-        "is_public_tunnel": bool(tunnel_manager.public_url),
-        "local_ip": tunnel_manager.local_ip,
+        "local_ip": network_manager.local_ip,
         "qr_code": make_qr_code_data_url(f"{base_url}/play")
     }
 
@@ -98,8 +98,8 @@ async def create_room(payload: dict):
         raise HTTPException(status_code=404, detail="Quiz nicht gefunden")
 
     room = game_manager.create_room(quiz)
-    base_url = tunnel_manager.get_join_url()
-    join_url = f"{base_url}/play?pin={room.pin}"
+    
+    join_url = f"http://{network_manager.local_ip}:{network_manager.port}/play?pin={room.pin}"
     qr_data = make_qr_code_data_url(join_url)
 
     return {

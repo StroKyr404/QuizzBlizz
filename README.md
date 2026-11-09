@@ -12,7 +12,7 @@
 * 🔒 **Sicher & Schultauglich:** 
   * **Lobby-Sperre (🔒 / 🔓):** Schließt den Raum, sobald alle Schüler anwesend sind.
   * **Passwortschutz:** Jedes Quiz kann optional mit einem geheimen Zusatz-Passwort geschützt werden.
-  * **Schul-WLAN Bypass:** Umgeht automatisch die „Client-Isolation“ typischer Schul-Router (über Cloudflare Quick Tunnel) – ganz ohne Portfreigabe oder Adminrechte.
+  * **Direktes Schul-WLAN:** Funktioniert zu 100 % lokal im Klassen-WLAN – blitzschnell mit 0 ms Internet-Latenz, völlig ohne externe Cloud-Abhängigkeiten oder Adminrechte.
 * 📊 **Excel-Import & Web-Editor:** Fragenkataloge direkt im Browser zusammenklicken oder als Excel-Vorlage (`.xlsx`) herunterladen, in Ruhe offline ausfüllen und per Drag & Drop hochladen.
 * 🎵 **Integrierte Sound-Effekte:** Lobby-Melodie, spannende Countdown-Ticks und Sieger-Fanfaren über die Web Audio API – keine externen MP3s oder Lizenzprobleme.
 * 🏆 **Siegerpodest mit Konfetti:** Animierte Siegerehrung (1., 2., 3. Platz) mit Konfetti-Kanone zum Abschluss des Spiels.
@@ -52,7 +52,7 @@ Wenn Kolleginnen das Spiel nutzen möchten, ohne überhaupt etwas herunterzulade
 4. Folgende Einstellungen hinterlegen:
    * **Runtime:** `Python 3`
    * **Build Command:** `pip install -r requirements.txt`
-   * **Start Command:** `python run.py --no-tunnel --port $PORT`
+   * **Start Command:** `python run.py --port $PORT`
 5. Auf **„Deploy Web Service“** (Free Plan) klicken.
 
 👉 **Ergebnis:** Eine feste Web-Adresse (z.&nbsp;B. `https://quizzblizz.onrender.com`), die Kolleginnen und Schüler einfach im Browser aufrufen können.
@@ -91,7 +91,7 @@ Wenn Kolleginnen das Spiel nutzen möchten, ohne überhaupt etwas herunterzulade
 
 * **Backend:** Python 3, FastAPI, Uvicorn (Asynchrone WebSockets für Latenzen < 30 ms)
 * **Frontend:** HTML5, Modernes Tailwind CSS, Web Audio API Synthesizer, Canvas-Confetti
-* **Netzwerk:** Automatischer Cloudflare Quick Tunnel (für strikte Schul-WLANs)
+* **Netzwerk:** 100 % lokales Schul-WLAN (automatische IP-Erkennung für iPads)
 * **Dateiformate:** JSON-Speicherung, OpenPyXL (Excel-Import/Export), QR-Code Engine
 
 ---

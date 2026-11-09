@@ -15,7 +15,6 @@ zip -r "$OUTPUT" \
     run.py \
     requirements.txt \
     README.md \
-    cloudflared \
     app \
     quizzes \
     -x "*.pyc" -x "*__pycache__*" -x "*.DS_Store*"

@@ -2,20 +2,17 @@ import uvicorn
 import sys
 import os
 import argparse
-from app.tunnel import tunnel_manager
+from app.network import network_manager
 
 def main():
     parser = argparse.ArgumentParser(description="QuizBlizz Schul-Quiz Server")
     parser.add_argument("--host", default="0.0.0.0", help="Host IP")
     parser.add_argument("--port", type=int, default=8000, help="Port")
-    parser.add_argument("--no-tunnel", action="store_true", help="Deaktiviert Cloudflare Tunnel")
     args = parser.parse_args()
 
-    tunnel_manager.port = args.port
-    if not args.no_tunnel:
-        tunnel_manager.start_tunnel()
-
-    join_url = tunnel_manager.get_join_url()
+    network_manager.port = args.port
+    join_url = network_manager.get_join_url()
+    
     print("\n" + "="*65)
     print("⚡ QUIZBLIZZ - DAS BLITZSCHNELLE SCHUL-QUIZ")
     print("="*65)
