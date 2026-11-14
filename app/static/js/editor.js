@@ -28,7 +28,12 @@ function renderQuiz() {
     
     const isProtected = Boolean(currentQuiz.password_enabled);
     if (pwdToggle) pwdToggle.checked = isProtected;
-    if (pwdInput) pwdInput.value = currentQuiz.password || '';
+    if (pwdInput) {
+        pwdInput.value = '';
+        pwdInput.placeholder = currentQuiz.has_password
+            ? 'Passwort aktiv (leer = behalten)'
+            : 'Passwort (z.B. bio2026)';
+    }
     if (pwdContainer) {
         if (isProtected) {
             pwdContainer.classList.remove('hidden');
@@ -219,7 +224,7 @@ async function saveCurrentQuiz() {
     const pwdInput = document.getElementById('quiz-pwd-input');
     if (pwdToggle && pwdToggle.checked) {
         const pwd = (pwdInput ? pwdInput.value.trim() : '');
-        if (!pwd) {
+        if (!pwd && !currentQuiz.has_password) {
             alert("Bitte gib ein Passwort für das Quiz ein oder deaktiviere das Häkchen für den Passwortschutz.");
             return;
         }
@@ -233,13 +238,18 @@ async function saveCurrentQuiz() {
     try {
         const res = await fetch('/api/quizzes', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'QuizBlizz'
+            },
             body: JSON.stringify(currentQuiz)
         });
         const data = await res.json();
-        if (data.status === 'ok') {
+        if (res.ok && data.status === 'ok') {
             alert("✅ Quiz erfolgreich gespeichert!");
-            location.href = `/editor?id=${data.id}`;
+            location.href = `/editor?id=${encodeURIComponent(data.id)}`;
+        } else {
+            alert(data.detail ? `Fehler: ${JSON.stringify(data.detail)}` : "Fehler beim Speichern des Quiz");
         }
     } catch (err) {
         console.error("Fehler beim Speichern:", err);
@@ -252,9 +262,14 @@ async function deleteQuizById(quizId) {
         return;
     }
     try {
-        const res = await fetch(`/api/quizzes/${quizId}`, { method: 'DELETE' });
+        const res = await fetch(`/api/quizzes/${encodeURIComponent(quizId)}`, {
+            method: 'DELETE',
+            headers: { 'X-Requested-With': 'QuizBlizz' }
+        });
         if (res.ok) {
             location.href = '/editor';
+        } else {
+            alert("Quiz konnte nicht gelöscht werden.");
         }
     } catch (err) {
         console.error("Fehler beim Löschen:", err);
@@ -272,12 +287,13 @@ async function uploadExcelFile(input) {
     try {
         const res = await fetch('/api/quizzes/import', {
             method: 'POST',
+            headers: { 'X-Requested-With': 'QuizBlizz' },
             body: formData
         });
         const data = await res.json();
-        if (data.status === 'ok') {
+        if (res.ok && data.status === 'ok') {
             alert(`🎉 Erfolgreich ${data.quiz.questions.length} Fragen aus Excel importiert!`);
-            location.href = `/editor?id=${data.quiz.id}`;
+            location.href = `/editor?id=${encodeURIComponent(data.quiz.id)}`;
         } else {
             alert(data.detail || "Fehler beim Importieren der Datei");
         }
@@ -288,6 +304,11 @@ async function uploadExcelFile(input) {
 }
 
 function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }

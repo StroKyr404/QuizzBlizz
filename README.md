@@ -12,7 +12,8 @@
 * 🔒 **Sicher & Schultauglich:** 
   * **Lobby-Sperre (🔒 / 🔓):** Schließt den Raum, sobald alle Schüler anwesend sind.
   * **Passwortschutz:** Jedes Quiz kann optional mit einem geheimen Zusatz-Passwort geschützt werden.
-  * **Direktes Schul-WLAN:** Funktioniert zu 100 % lokal im Klassen-WLAN – blitzschnell mit 0 ms Internet-Latenz, völlig ohne externe Cloud-Abhängigkeiten oder Adminrechte.
+  * **Direktes Schul-WLAN:** Funktioniert zu 100 % lokal und komplett offline im Klassen-WLAN – blitzschnell mit 0 ms Internet-Latenz, ohne externe Tracking-/CDN-Anfragen oder Adminrechte.
+  * **Lehrer-Schutz:** Beamer-Ansicht (`/host`) und Editor (`/editor`) sind lokal ausschließlich auf dem Host-Mac zugänglich; Schülergeräte gelangen nur auf den Buzzer (`/play`). Im Cloud-Betrieb wird automatisch ein Lehrer-Login aktiviert.
 * 📊 **Excel-Import & Web-Editor:** Fragenkataloge direkt im Browser zusammenklicken oder als Excel-Vorlage (`.xlsx`) herunterladen, in Ruhe offline ausfüllen und per Drag & Drop hochladen.
 * 🎵 **Integrierte Sound-Effekte:** Lobby-Melodie, spannende Countdown-Ticks und Sieger-Fanfaren über die Web Audio API – keine externen MP3s oder Lizenzprobleme.
 * 🏆 **Siegerpodest mit Konfetti:** Animierte Siegerehrung (1., 2., 3. Platz) mit Konfetti-Kanone zum Abschluss des Spiels.
@@ -53,6 +54,7 @@ Wenn Kolleginnen das Spiel nutzen möchten, ohne überhaupt etwas herunterzulade
    * **Runtime:** `Python 3`
    * **Build Command:** `pip install -r requirements.txt`
    * **Start Command:** `python run.py --port $PORT`
+   * **Environment Variable:** `QUIZBLIZZ_ADMIN_PASSWORD` (dein gewünschtes Lehrer-Passwort für `/host` und `/editor`)
 5. Auf **„Deploy Web Service“** (Free Plan) klicken.
 
 👉 **Ergebnis:** Eine feste Web-Adresse (z.&nbsp;B. `https://quizzblizz.onrender.com`), die Kolleginnen und Schüler einfach im Browser aufrufen können.
@@ -90,7 +92,7 @@ Wenn Kolleginnen das Spiel nutzen möchten, ohne überhaupt etwas herunterzulade
 ## 🛠️ Technologie-Stack
 
 * **Backend:** Python 3, FastAPI, Uvicorn (Asynchrone WebSockets für Latenzen < 30 ms)
-* **Frontend:** HTML5, Modernes Tailwind CSS, Web Audio API Synthesizer, Canvas-Confetti
+* **Frontend:** HTML5, lokal gebündeltes Tailwind CSS (offlinefähig), Web Audio API Synthesizer, Canvas-Confetti
 * **Netzwerk:** 100 % lokales Schul-WLAN (automatische IP-Erkennung für iPads)
 * **Dateiformate:** JSON-Speicherung, OpenPyXL (Excel-Import/Export), QR-Code Engine
 

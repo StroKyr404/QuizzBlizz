@@ -14,9 +14,10 @@ zip -r "$OUTPUT" \
     start.sh \
     run.py \
     requirements.txt \
+    LICENSE \
     README.md \
     app \
-    quizzes \
+    quizzes/allgemeinwissen-starter.json \
     -x "*.pyc" -x "*__pycache__*" -x "*.DS_Store*"
 
 echo "✅ Fertig! Die Datei '$OUTPUT' kann jetzt direkt auf GitHub hochgeladen oder per AirDrop/USB an Kolleginnen weitergegeben werden."

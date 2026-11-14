@@ -51,7 +51,7 @@
                         <label class="w-full py-2.5 px-3 bg-purple-900/40 hover:bg-purple-900/60 text-xs font-bold rounded-xl text-center border border-purple-500/30 cursor-pointer flex items-center justify-center space-x-2 text-purple-200 hover:text-white transition-all">
                             <span>📤</span>
                             <span>Excel-Datei hochladen</span>
-                            <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" class="hidden" onchange="uploadExcelFile(this)">
+                            <input type="file" id="excel-file-input" accept=".xlsx" class="hidden" onchange="uploadExcelFile(this)">
                         </label>
                     </div>
                 </div>
@@ -65,12 +65,12 @@
 
                 <div id="quiz-list-sidebar" class="flex-1 space-y-2 overflow-y-auto max-h-[500px] pr-1">
                     {% for q in quizzes %}
-                    <div onclick="loadQuizForEdit('{{ q.id }}')" class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 cursor-pointer transition-all flex items-center justify-between group {% if active_quiz and active_quiz.id == q.id %}ring-2 ring-purple-400 bg-white/10{% endif %}">
+                    <div data-quiz-id="{{ q.id }}" onclick="loadQuizForEdit(this.dataset.quizId)" class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 cursor-pointer transition-all flex items-center justify-between group {% if active_quiz and active_quiz.id == q.id %}ring-2 ring-purple-400 bg-white/10{% endif %}">
                         <div class="truncate pr-2">
                             <div class="font-bold text-white text-sm truncate">{{ q.title }}</div>
                             <div class="text-[11px] text-purple-300 font-medium">{{ q.question_count }} Fragen</div>
                         </div>
-                        <button onclick="event.stopPropagation(); deleteQuizById('{{ q.id }}')" class="opacity-0 group-hover:opacity-100 text-rose-400 hover:text-rose-300 text-xs font-bold p-1 rounded-lg transition-opacity" title="Quiz löschen">
+                        <button data-quiz-id="{{ q.id }}" onclick="event.stopPropagation(); deleteQuizById(this.dataset.quizId)" class="opacity-0 group-hover:opacity-100 text-rose-400 hover:text-rose-300 text-xs font-bold p-1 rounded-lg transition-opacity" title="Quiz löschen">
                             ✕
                         </button>
                     </div>

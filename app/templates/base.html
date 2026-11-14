@@ -4,48 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{% block title %}QuizBlizz - Schul-Quiz{% endblock %}</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'Nunito', 'sans-serif'],
-                        display: ['Montserrat', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            purple: '#46178f',
-                            darkPurple: '#2b005e',
-                            lightPurple: '#864cbf',
-                            red: '#e21b3c',
-                            blue: '#1368ce',
-                            yellow: '#d89e00',
-                            green: '#26890c',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
 
-    <!-- Canvas Confetti for podium -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-
+    <!-- Local Compiled Tailwind CSS (100% offline, zero external tracking) -->
+    <link rel="stylesheet" href="/static/css/tailwind.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- Local Canvas Confetti for podium -->
+    <script src="/static/vendor/confetti.browser.min.js"></script>
     {% block head %}{% endblock %}
 </head>
 <body class="h-full bg-slate-900 text-slate-100 flex flex-col font-sans select-none antialiased">
     {% block content %}{% endblock %}
 
-    <!-- Built-in Web Audio Sound Synthesizer (Kahoot style) -->
+    <!-- Built-in Web Audio Sound Synthesizer -->
     <script src="/static/js/sound.js"></script>
     {% block scripts %}{% endblock %}
 </body>

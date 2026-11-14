@@ -137,14 +137,17 @@ async function createRoomFromSelected() {
     try {
         const res = await fetch('/api/room/create', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'QuizBlizz'
+            },
             body: JSON.stringify({ quiz_id: quizId })
         });
         const data = await res.json();
-        if (data.pin) {
+        if (res.ok && data.pin) {
             setupLobby(data);
         } else {
-            alert("Fehler beim Erstellen des Raums");
+            alert(data.detail || "Fehler beim Erstellen des Raums");
         }
     } catch (err) {
         console.error("Fehler:", err);
@@ -178,12 +181,13 @@ function setupLobby(roomData) {
     showView('view-lobby');
     window.sounds.startLobbyMusic();
 
-    connectHostWebSocket(roomData.pin);
+    connectHostWebSocket(roomData.pin, roomData.host_token);
 }
 
-function connectHostWebSocket(pin) {
+function connectHostWebSocket(pin, hostToken) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/host/${pin}`;
+    const tokenParam = encodeURIComponent(hostToken || '');
+    const wsUrl = `${protocol}//${window.location.host}/ws/host/${pin}?token=${tokenParam}`;
 
     ws = new WebSocket(wsUrl);
 
@@ -547,6 +551,11 @@ function triggerConfetti() {
 }
 
 function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }
